@@ -1,0 +1,1017 @@
+/* Bui Phu Khuyen
+16DTCH4 - 1611061839 */
+///---Week 1: INPUT/OUTPUT MATRIX FROM FILE - CHECK MATRIX---///
+
+#include<stdio.h>
+#define MAX 50
+#define LinkInput "C:/File Test/Test.txt"
+
+typedef struct GRAPH {
+	int n;
+	int a[MAX][MAX];
+}Graph;
+
+typedef struct STACK {
+	int size;
+	int b[MAX];
+}Stack;
+
+int ReadFile(char FileName[100], Graph &g) {
+	FILE * f = fopen(FileName,"rt");
+	if(f == NULL) {
+		printf("Opening File Error!");
+		return 0;
+	}
+	fscanf(f,"%d",&g.n);
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			fscanf(f,"%d",&g.a[i][j]);
+		}
+	}
+	fclose(f);
+	return 1;
+}
+
+void OutPutMatrix(Graph g) {
+	printf("Graph Vertices is: %d\n",g.n);
+	printf("Adjacency Matrix:\n");
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			printf("%3d",g.a[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+int CheckMatrix(Graph g) {
+	for(int i = 0 ; i < g.n ; i++) {
+		if(g.a[i][i] != 0)
+			return 0;
+	}
+	return 1;
+}
+
+int CheckScalarGraph(Graph g) {
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			if(g.a[i][j] != g.a[j][i])
+				return 0;
+		}
+	}
+return 1;
+}
+
+int main() {
+	Graph g;
+	if(ReadFile(LinkInput,g) == 1) {
+		printf("Receive from File is Success!\n");
+		OutPutMatrix(g);
+		if(CheckMatrix(g) == 1) 
+			printf("Graph is Valid!\n");
+	else
+		printf("Graph is inValid\n");	
+	if(CheckScalarGraph(g) == 1) 
+		printf("Scalar Graph.\n");
+	else
+		printf("Direction Graph.\n");	
+	}	
+return 0;
+}
+
+-------------------------------------------------------------------------------------------
+/* Bui Phu Khuyen
+16DTCH4 - 1611061839 */
+///---Week 1: GRAPH THEORY---///
+
+#include<stdio.h>
+#define MAX 50
+#define LinkFile "C:/File Test/Test_1.txt"
+
+typedef struct GRAPH {
+	int n;
+	int a[MAX][MAX];
+}Graph;
+
+int ReadFile(char FileName[100], Graph &g) {
+	FILE * f = fopen(FileName,"rt");
+	if(f == NULL) {
+		printf("Opening File Error!");
+		return 0;
+	}
+	fscanf(f,"%d",&g.n);
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			fscanf(f,"%d",&g.a[i][j]);
+		}
+	}
+	fclose(f);
+	return 1;
+}
+
+void OutPutMatrix(Graph g) {
+	printf("Graph Vertices is: %d\n",g.n);
+	printf("Adjacency Matrix:\n");
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			printf("%3d",g.a[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+void FindTheory(int i, int Label[MAX], Graph g) {
+	for(int j = 0 ; j < g.n ; j++) {
+		if(g.a[i][j] != 0 && Label[j] != Label[i]) {
+			Label[j] = Label[i];
+			FindTheory(j,Label,g);
+		}
+	}
+}
+
+void GraphTheory(Graph g) {
+	int Label[MAX];
+	int CountTheory = 0;
+	for(int i = 0; i < g.n ; i++) {
+		Label[i] = 0;
+	}
+	
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			if(Label[i] == 0) {
+				CountTheory++;
+				Label[i] = CountTheory;
+				FindTheory(i,Label,g);
+			}
+		}
+	}
+	printf("Number of Graph Theory is: %d", CountTheory);
+	for(int i = 1 ; i <= CountTheory ; i++) {
+		printf("\nGraph Thery %d Include Vertices:",i);
+		for(int j = 0 ; j < g.n ; j++) {
+			if(Label[j] == i)
+				printf("%3c", j + 'A');
+		}
+	}
+}
+
+int main() {
+	Graph g;
+	if(ReadFile(LinkFile,g) == 1) {
+		printf("Receive from File is Success!\n");
+		OutPutMatrix(g);
+		GraphTheory(g);
+	}	
+return 0;
+}
+
+-------------------------------------------------------------------------------------------
+
+/* Bui Phu Khuyen
+16DTCH4 - 1611061839 */
+///---Week 2: EULER---///
+
+#include<stdio.h>
+#define MAX 20
+#define LinkFile "C:/File Test/Test_2A.txt"
+#define LinkFile2 "C:/File Test/Test_2B.txt"
+
+typedef struct GRAPH {
+	int n;
+	int a[MAX][MAX];
+}Graph;
+
+typedef struct STACK {
+	int size;
+	int b[MAX];
+}Stack;
+
+int ReadFile(char FileName[100], Graph &g) {
+	FILE * f = fopen(FileName,"rt");
+	if(f == NULL) {
+		printf("Opening File Error!");
+		return 0;
+	}
+	fscanf(f,"%d",&g.n);
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			fscanf(f,"%d",&g.a[i][j]);
+		}
+	}
+	fclose(f);
+	return 1;
+}
+
+void OutPutMatrix(Graph g) {
+	printf("Graph Vertices is: %d\n",g.n);
+	printf("Adjacency Matrix:\n");
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			printf("%3d",g.a[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+void iNit(Stack &s) {
+	s.size = 0;
+}
+
+void Put_Back_Stack(Stack &s, int Value) {
+	if(s.size + 1 >= MAX) {
+		return;
+	}	
+	s.b[s.size] = Value;
+	s.size++;
+}
+
+int Start_Point(Graph g) {
+	int Rank;
+	for(int i = 0 ; i < g.n ; i++) {
+		Rank = 0;
+		for(int j = 0 ; j < g.n ; j++) {
+			if(g.a[i][j] != 0) {
+				Rank++;
+			}
+		}
+		if(Rank%2 != 0) {
+			return -1;
+		}
+	}
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			if(g.a[i][j] != 0) {
+				return i;
+			}
+		}
+	}
+return -1;	
+}
+
+int Start_EvenPoint(Graph g) {
+	int Rank, Count = 0;
+	for(int i = 0 ; i < g.n ; i++) {
+		Rank = 0;
+		for(int j = 0 ; j < g.n ;j++) {
+			if(g.a[i][j] != 0) {
+				Rank++;
+			}	
+		}
+		if(Rank%2 != 0) {
+			Count++;
+		}
+		if(Count == 2) {
+			return i; 
+		} 
+	}
+return -1;
+}
+
+void FindWay(int i, Graph &g, Stack &s) {
+	for(int j = 0 ; j < g.n ; j ++) {
+		if(g.a[i][j] != 0) {
+			g.a[i][j] = g.a[j][i] = 0;
+			FindWay(j,g,s);
+		}
+	}
+	Put_Back_Stack(s,i);
+}
+
+int CheckEuler(Graph g) {
+	Graph Temp = g;
+	Stack s;
+	iNit(s);
+	int x = Start_Point(Temp);
+	if(x == -1)
+		return 0;
+	FindWay(0, Temp, s);
+	
+	for(int i = 0 ; i < Temp.n ; i++) {
+		for(int j = 0 ; j < Temp.n ; j++) {
+			if(Temp.a[i][j] != 0) {
+				return 0;
+			}
+		}
+	}
+	
+	if(s.b[0] != s.b[s.size-1]) {
+		return 0;
+	}
+	
+	printf("Euler is:\n");
+	printf(" %2c ",s.b[s.size - 1] + 'A');	
+	for(int i = s.size - 2 ; i >= 0 ; i--) {
+		printf("->%2c ",s.b[i] + 'A');
+	}
+return 1;
+}
+
+int CheckEulerWay(Graph g) {
+	Graph Temp = g;
+	Stack s;
+	iNit(s);
+	int x = Start_EvenPoint(Temp);
+	if(x == -1) 
+		return 0;
+	FindWay(0,Temp,s);
+	
+	for(int i = 0 ; i < Temp.n ; i++) {
+		for(int j = 0 ; j < Temp.n ; j++) {
+			if(Temp.a[i][j] != 0) {
+				return 0;
+			}
+		}
+	}
+	
+	if(s.b[0] == s.b[s.size-1]) {
+		return 0;
+	}
+	printf("Euler Way is:\n");
+	printf("%3c ",s.b[s.size - 1]+'A');
+	for(int i = s.size - 2 ; i >= 0 ; i--) {
+		printf(" ->%3c",s.b[i]+'A');
+	}
+return 1;
+}
+
+int main() {
+	Graph g;
+	if(ReadFile(LinkFile2,g) == 1) {
+		printf("Receive from File is Success!\n");
+		OutPutMatrix(g);
+		if(CheckEuler(g) != 1) {
+			printf("Not Euler!\n");
+			if(CheckEulerWay(g)!=1) {
+				printf("Not Euler Way");
+			}
+		}
+	}	
+	return 0;
+}
+
+------------------------------------------------------------------------------------------------
+
+/* Bui Phu Khuyen
+16DTCH4 - 1611061839 */
+///---Week 3: BREADTH FIRST SEARCH ALGORITHM---///
+
+#include<stdio.h>
+#define MAX 50
+#define LinkInput "C:/File Test/Test_3.txt"
+
+int Path[MAX];
+int Visited[MAX];
+
+typedef struct GRAPH {
+	int n;
+	int a[MAX][MAX];
+}Graph;
+
+typedef struct QUEUE {
+	int size;
+	int b[MAX];
+}Queue;
+
+int ReadFile(char FileName[100], Graph &g) {
+	FILE * f = fopen(FileName, "rt");
+	if(f == NULL) {
+		printf("Opening File Error!");
+		return 0;
+	}
+	fscanf(f,"%d",&g.n);
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			fscanf(f,"%d",&g.a[i][j]);
+		}
+	}
+	fclose(f);
+return 1;
+}
+
+void OutPutMaxtrix(Graph g) {
+	printf("Graph Vertices is: %d\n", g.n);
+	printf("Matrix is:\n");
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			printf("%3d",g.a[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+void iNit(Queue &q) {
+	q.size = 0;
+}
+
+int Put_Back_Queue(Queue &q, int Value) {
+	if(q.size + 1 >= MAX) {
+		return 0;
+	}
+	q.b[q.size] = Value;
+	q.size++;
+return 1;
+}
+
+int Pop_Value_Queue(Queue &q, int &Value) {
+	if(q.size <= 0) 
+		return 0;
+	Value = q.b[0];
+	for(int i = 0 ; i < q.size - 1 ; i++) {
+		q.b[i] = q.b[i+1];
+	}
+	q.size--;
+return 1;	
+}
+
+int CheckQueueEmpty(Queue q) {
+	if(q.size <= 0)
+		return 1;
+return 0;
+}
+
+void BFS(int v, Graph g) {
+	Queue q;
+	iNit(q);
+	Put_Back_Queue(q,v);
+	while(!CheckQueueEmpty(q)) {
+		Pop_Value_Queue(q,v);
+		Visited[v] = 1;
+		for(int u = 0 ; u < g.n ; u++) {
+			if(g.a[v][u] != 0 && Visited[u] == 0) {
+				Put_Back_Queue(q,u);
+				if(Path[u] == -1) {
+					Path[u] = v;
+				}
+			}
+		}
+	}	
+}
+
+void BFS_Main(int S, int F, Graph g) {
+	for(int i = 0 ; i < g.n ; i++) {
+		Path[i] = -1;
+		Visited[i] = 0;
+	}
+	BFS(S,g);
+	if(Visited[F] == 1) {
+		printf("Path from %c to %c using BFS Alogithm:", S+'A', F+'A');
+		int i = F;
+		printf("%3c",F+'A');
+		while(S != i) {
+			printf(" <-%2c",Path[i]+'A');
+			i = Path[i];
+		}
+	}
+	else {
+		printf("No path from %c to %c!", S+'A',F+'A');
+	}
+}
+
+int main() {
+	Graph g;
+	if(ReadFile(LinkInput,g) == 1) {
+		printf("Receive Matrix From File is Success!\n");
+		OutPutMaxtrix(g);
+		BFS_Main(0,10,g);
+	}
+	return 0;
+}
+
+------------------------------------------------------------------------------------------------
+
+/* Bui Phu Khuyen
+16DTCH4 - 1611061839 */
+///---Week 3: DEPTH FIRST SEARCH ALGORITHM---///
+
+#include<stdio.h>
+#define MAX 50
+#define LinkInput "C:/File Test/Test_3.txt"
+
+int Path[MAX];
+int Visited[MAX];
+
+typedef struct GRAPH {
+	int n;
+	int a[MAX][MAX];
+}Graph;
+
+int ReadFile(char FileName[100], Graph &g) {
+	FILE * f = fopen(FileName,"rt");
+	if(f == NULL) {
+		printf("Opening File Error!");
+		return 0;
+	}
+	fscanf(f,"%d",&g.n);
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			fscanf(f,"%d",&g.a[i][j]);
+		}
+	}
+	fclose(f);
+	return 1;
+}
+void OutPutMatrix(Graph g) {
+	printf("Graph Vertices is: %d\n",g.n);
+	printf("Adjacency Matrix:\n");
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			printf("%3d",g.a[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+int DFS(int v, Graph g) {
+	Visited[v] = 1;
+	for(int u = 0 ; u < g.n ; u++) {
+		if(g.a[v][u] != 0 && Visited[u] == 0) {
+			Path[u] = v;
+			DFS(u,g);
+		}
+	}
+	return 1;	
+}
+
+void DFS_Main(int S, int F, Graph g) {
+	for(int i = 0 ; i < g.n ; i++) {
+		Path[i] = -1;
+		Visited[i] = 0;
+	}
+	DFS(S,g);
+	int Reverse[MAX];
+	if(Visited[F]==1) {
+		printf("Path from %c to %c using DFS Algorithm:\n", S+'A', F+'A');
+		int i = F;
+		printf("%3c",F+'A');
+		while(S != i) {	
+			printf(" <-%2c",Path[i]+'A');
+			i = Path[i];
+		}
+	}
+	else {
+		printf("No path from %c to %c!", S+'A', F+'A');
+	}
+}
+
+int main() {
+	Graph g;
+	if(ReadFile(LinkInput,g) == 1) {
+		printf("Receive from File is Success!\n");
+		OutPutMatrix(g);
+		DFS_Main(0,10,g);
+	}
+	return 0;
+}
+
+-----------------------------------------------------------------------------------------
+
+/* Bui Phu Khuyen
+16DTCH4 - 1611061839 */
+///---Week 4: MINIMUM SPANNING TREE (MST) - KRUSKAL---///
+
+#include<stdio.h>
+#define MAX 50
+#define LinkInput "C:/File Test/Test_4.txt"
+
+typedef struct GRAPH {
+	int n;
+	int a[MAX][MAX];
+}Graph;
+
+typedef struct EDGE {
+	int u;
+	int v;
+	int value;
+}Edge;
+
+int ReadFile(char FileName[100], Graph &g) {
+	FILE * f = fopen(FileName,"rt");
+	if(f == NULL) {
+		printf("Opening File Error!");
+		return 0;
+	}
+	fscanf(f,"%d",&g.n);
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			fscanf(f,"%d",&g.a[i][j]);
+		}
+	}
+	fclose(f);
+	return 1;
+}
+
+void OutPutMatrix(Graph g) {
+	printf("Graph Vertices is: %d\n",g.n);
+	printf("Adjacency Matrix:\n");
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			printf("%3d",g.a[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+void Swap(Edge E[MAX], int SumEdge) {
+	Edge Temp;
+	for(int i = 0 ; i < SumEdge - 1 ; i++) {
+		for(int j = i + 1 ; j < SumEdge ; j++) {
+			if(E[i].value > E[j].value) {
+				Temp = E[i];
+				E[i] = E[j];
+				E[j] = Temp;
+			}
+		}	
+	}
+}
+
+void Kruskal(Graph g) {
+	Edge EList[MAX];
+	int SumEdge = 0;
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = i + 1 ; j < g.n ; j++) {
+			if(g.a[i][j] > 0) {
+				EList[SumEdge].u = i;
+				EList[SumEdge].v = j;
+				EList[SumEdge].value = g.a[i][j];
+				SumEdge++;
+			}
+		}
+	}
+	Swap(EList,SumEdge);
+	int nT = 0;
+	Edge E[MAX];
+	int Label[MAX];
+	for(int i = 0 ; i < g.n ; i++) {
+		Label[i] = i;
+	}
+	int Edge = 0;
+	while(nT < g.n && Edge < SumEdge) {
+		if(Label[EList[Edge].u] != Label[EList[Edge].v]) {
+			E[nT] = EList[Edge];
+			nT++;
+			int Value = Label[EList[Edge].v];
+			for(int j = 0 ; j < g.n ; j++) {
+				if(Label[j] == Value) 
+					Label[j] = Label[EList[Edge].u];
+			}
+		}
+		Edge++;	
+	}
+	if(nT != g.n - 1) {
+		printf("\nGraph is not Theory!\n");	
+	}
+	else {
+		int SumMST = 0;
+		printf("MST using Kruskal Algorithm: \n");
+		for(int i = 0 ; i < nT ; i++) {
+			printf("(%c,%c)\t",E[i].u +'A',E[i].v+'A');
+			SumMST += E[i].value;
+		}
+		printf("\nWeight of MST: %d",SumMST);
+	}
+}
+int main() {
+	Graph g;
+	if(ReadFile(LinkInput,g) == 1) {
+		printf("Receive from File is Success!\n");
+		OutPutMatrix(g);
+		Kruskal(g);
+	}	
+	return 0;
+}
+
+------------------------------------------------------------------------------------------
+
+/* Bui Phu Khuyen
+16DTCH4 - 1611061839 */
+///---Week 4: MINIMUM SPANNING TREE (MST) - PRIM---///
+
+#include<stdio.h>
+#define MAX 50
+#define LinkInput "C:/File Test/Test_4.txt"
+
+int Visited[MAX];
+
+typedef struct GRAPH {
+	int n;
+	int a[MAX][MAX];
+}Graph;
+
+typedef struct EDGE {
+	int u;
+	int v;
+	int value;
+}Edge;
+
+Edge E[MAX];
+
+int ReadFile(char FileName[100], Graph &g) {
+	FILE * f = fopen(FileName,"rt");
+	if(f == NULL) {
+		printf("Opening File Error!");
+		return 0;
+	}
+	fscanf(f,"%d",&g.n);
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			fscanf(f,"%d",&g.a[i][j]);
+		}
+	}
+	fclose(f);
+	return 1;
+}
+
+void OutPutMatrix(Graph g) {
+	printf("Graph Vertices is: %d\n",g.n);
+	printf("Adjacency Matrix:\n");
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			printf("%3d",g.a[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+int FindTheory(int i, int Label[MAX], Graph g) {
+	for(int j = 0 ; j < g.n ; j++) {
+		if(g.a[i][j] != 0 && Label[j] == 0) {
+			Label[j] = Label[i];
+			FindTheory(j,Label,g);
+		}
+	}
+	return 1;
+}
+
+int GraphTheory(Graph g) {
+	int Label[MAX];
+	int CountTheory = 0;
+	for(int i = 0 ;i < g.n ; i++) {
+		Label[i] = 0;
+	}
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			if(Label[i] == 0) {
+				CountTheory++;
+				Label[i] = CountTheory;
+				FindTheory(i,Label,g);
+			}
+		}
+	}
+	return CountTheory;
+}
+
+void Prim(Graph g) {
+	if(GraphTheory(g) != 1)
+	{
+		printf("Graph is not Theory!");
+		return;
+	}
+	int nT;
+	for(int i = 0 ; i < g.n ; i++) {
+		Visited[i] = 0;
+	}
+	Visited[0] = 1;
+	while(nT < g.n - 1) {
+		Edge eMin;
+		int minValue = MAX;
+		for(int i = 0 ; i < g.n ; i++) {
+			if(Visited[i] == 1) {
+				for(int j = 0 ; j < g.n ; j++) {
+					if(Visited[j] == 0 && g.a[i][j] != 0 && minValue > g.a[i][j]) {
+						eMin.u = i;
+						eMin.v = j;
+						eMin.value = g.a[i][j];
+						minValue = g.a[i][j];
+					}
+				}
+			}
+		}
+		E[nT] = eMin;
+		nT++;
+		Visited[eMin.v] = 1;
+	}
+	
+	int SumMST = 0;
+	printf("MST using Prim Algorithm:\n");
+	for(int i = 0 ; i <= nT - 1 ; i++) {
+		printf("(%c,%c)\t",E[i].u +'A',E[i].v+'A');
+		SumMST += E[i].value;
+	}
+	printf("\nWeight of MST: %d",SumMST);
+		
+}
+int main() {
+	Graph g;
+	if(ReadFile(LinkInput,g) == 1) {
+		printf("Receive from File is Success!\n");
+		OutPutMatrix(g);
+		Prim(g);
+	}
+	return 0;
+}
+
+-------------------------------------------------------------------------------------------
+
+/* Bui Phu Khuyen
+16DTCH4 - 1611061839 */
+///---Week 5: FIND SHORTEST PATH - DIJKSTRA---///
+
+#include<stdio.h>
+#define MAX 50
+#define INF 1e9
+#define LinkInput "C:/File Test/Test_5.txt"
+
+int Path[MAX];
+int Visited[MAX];
+int Dist[MAX];
+
+typedef struct GRAPH {
+	int n;
+	int a[MAX][MAX];
+}Graph;
+
+int ReadFile(char FileName[100], Graph &g) {
+	FILE * f = fopen(FileName,"rt");
+	if(f == NULL) {
+		printf("Opening File Error!");
+		return 0;
+	}
+	fscanf(f,"%d",&g.n);
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			fscanf(f,"%d",&g.a[i][j]);
+		}
+	}
+	fclose(f);
+	return 1;
+}
+
+void OutPutMatrix(Graph g) {
+	printf("Graph Vertices is: %d\n",g.n);
+	printf("Adjacency Matrix:\n");
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			printf("%3d",g.a[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+int FindWay(Graph g) {
+	int li = -1;
+	float p = INF;
+	for(int i = 0 ; i < g.n ; i++) {
+		if(Visited[i] == 0 && Dist[i] < p) {
+			p = Dist[i];
+			li = i;
+		}
+	}
+	return li; 
+}
+
+void UpdateWay(int u, Graph g) {
+	Visited[u] = 1;
+	for(int v = 0 ; v < g.n ; v++) {
+		if(g.a[u][v]!=0 && Visited[v] == 0 && g.a[u][v] < INF) {
+			if(Dist[v] > Dist[u] + g.a[u][v]) {
+				Dist[v] = Dist[u] + g.a[u][v];
+				Path[v] = u;
+			}
+		}
+	}
+}
+
+void Dijkstra(int S, int F, Graph g) {
+	for(int i = 0 ; i < g.n ; i++) {
+		Path[i] = -1;
+		Visited[i] = 0;
+		Dist[i] = INF;
+	}
+	Dist[S] = 0;
+	while(Visited[F] == 0) {
+		int u = FindWay(g);
+		if(u == -1) break;
+		UpdateWay(u,g);
+	}
+	if(Visited[F] == 1) {
+		printf("Shortest Path from %c to %c using Dijkstra Algorithm:",S+'A',F+'A');
+		int i = F;
+		printf("%3c",F+'A');
+		while(Path[i] != S) {
+			printf(" <-%2c",Path[i]+'A');
+			i = Path[i];
+		}
+		printf(" <-%2c",Path[i]+'A');
+		printf("\nWeight of Path: %d",Dist[F]);
+	}
+	else {
+		printf("No path from %c to %c\n",S+'A', F+'A');
+	}
+}
+
+int main() {
+	Graph g;
+	if(ReadFile(LinkInput,g) == 1) {
+		printf("Receive from File is Success!\n");
+		OutPutMatrix(g);
+		Dijkstra(0,10,g);
+	}	
+	return 0;
+}
+
+----------------------------------------------------------------------------------------------
+
+/* Bui Phu Khuyen
+16DTCH4 - 1611061839 */
+///---Week 5: FIND SHORTEST PATH - FLOYD---///
+
+#include<stdio.h>
+#define MAX 50
+#define INF 1e9
+#define LinkInput "C:/File Test/Test_5.txt"
+
+int After_Node[MAX][MAX];
+int L[MAX][MAX];
+
+typedef struct GRAPH {
+	int n;
+	int a[MAX][MAX];
+}Graph;
+
+int ReadFile(char FileName[100], Graph &g) {
+	FILE * f = fopen(FileName,"rt");
+	if(f == NULL) {
+		printf("Opening File Error!");
+		return 0;
+	}
+	fscanf(f,"%d",&g.n);
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			fscanf(f,"%d",&g.a[i][j]);
+		}
+	}
+	fclose(f);
+	return 1;
+}
+
+void OutPutMatrix(Graph g) {
+	printf("Graph Vertices is: %d\n",g.n);
+	printf("Adjacency Matrix:\n");
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			printf("%3d",g.a[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+void Floyd(int S, int F, Graph g) {
+	for(int i = 0 ; i < g.n ; i++) {
+		for(int j = 0 ; j < g.n ; j++) {
+			if(g.a[i][j] > 0) {
+				After_Node[i][j] = j;
+				L[i][j] = g.a[i][j];
+			}
+			else {
+				After_Node[i][j] = -1;
+				L[i][j] = INF;
+			}
+			
+		}
+	}
+	
+	for(int k = 0 ; k < g.n ; k++) {
+		for(int i = 0 ; i < g.n ; i++) {
+			for(int j = 0 ; j < g.n ; j++) {
+				if(L[i][j] > L[i][k] + L[k][j]) {
+					L[i][j] = L[i][k] + L[k][j];
+					After_Node[i][j] = After_Node[i][k];	
+				}
+			}
+		}
+	}
+	
+	if(After_Node[S][F] == -1) {
+		printf("Not path from %c to %c!",S+'A',F+'A');
+	}
+	else {
+		printf("Shortest Path from %c to %c using Floyd Algorithm: ", S+'A',F+'A');
+		printf("%c",S+'A');
+		int u = S;
+		while(After_Node[u][F] != F) {
+			u = After_Node[u][F];
+			printf(" -> %c",u+'A');
+		}
+		printf(" -> %c",F+'A');
+		printf("\nWeight of Path: %d",L[S][F]); 
+	}
+}
+
+int main() {
+	Graph g;
+	if(ReadFile(LinkInput,g) == 1) {
+		printf("Receive from File is Success!\n");
+		OutPutMatrix(g);
+		Floyd(0,10,g);
+	}		
+	return 0;
+}
